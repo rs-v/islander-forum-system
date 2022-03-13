@@ -6,16 +6,16 @@ import (
 	"io/ioutil"
 	"net/http"
 	"reflect"
+
+	"github.com/thinkeridea/go-extend/exnet"
 )
 
 func remoteIp(req *http.Request) string {
-	ipAddr := remoteIpItem(req)
-	for i := 0; i < len(ipAddr); i++ {
-		if ipAddr[i] == ':' {
-			return ipAddr[:i]
-		}
+	ip := exnet.ClientPublicIP(req)
+	if ip == "" {
+		ip = exnet.ClientIP(req)
 	}
-	return ""
+	return ip
 }
 
 func remoteIpItem(req *http.Request) string {
