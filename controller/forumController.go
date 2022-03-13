@@ -9,24 +9,25 @@ import (
 )
 
 type ForumPost struct {
-	Id            int    `json:"id"`
-	Title         string `json:"title"`
-	Value         string `json:"value"`
-	FollowId      int    `json:"followId"`
-	PlateId       int    `json:"plateId"`
-	Status        int    `json:"status"`
-	ReplyArr      []int  `json:"replyArr"`
-	UserId        int    `json:"userId"`
-	Time          int    `json:"time"`
-	MediaUrl      string `json:"mediaUrl"`
-	ReplyCount    int    `json:"replyCount"`
-	TopStatus     int    `json:"topStatus"`
-	LastReplyTime int    `json:"lastReplyTime"`
-	SageAddId     []int  `json:"sageAddId"`
-	SageSubId     []int  `json:"sageSubId"`
-	SageAddCount  int    `json:"sageAddCount"`
-	SageSubCount  int    `json:"sageSubCount"`
-	Name          string `json:"name"`
+	Id            int         `json:"id"`
+	Title         string      `json:"title"`
+	Value         string      `json:"value"`
+	FollowId      int         `json:"followId"`
+	PlateId       int         `json:"plateId"`
+	Status        int         `json:"status"`
+	ReplyArr      []int       `json:"replyArr"`
+	UserId        int         `json:"userId"`
+	Time          int         `json:"time"`
+	MediaUrl      string      `json:"mediaUrl"`
+	ReplyCount    int         `json:"replyCount"`
+	TopStatus     int         `json:"topStatus"`
+	LastReplyTime int         `json:"lastReplyTime"`
+	SageAddId     []int       `json:"sageAddId"`
+	SageSubId     []int       `json:"sageSubId"`
+	SageAddCount  int         `json:"sageAddCount"`
+	SageSubCount  int         `json:"sageSubCount"`
+	Name          string      `json:"name"`
+	LastReplyArr  []ForumPost `json:"lastReplyArr"`
 }
 
 type ForumPlate struct {
@@ -69,6 +70,17 @@ func GetForumPost(postId int) (ForumPost, error) {
 // 获取板块首页
 func GetForumPostIndex(plateId int, page int, size int) []ForumPost {
 	res := TransferForumPostListModel(model.GetForumPostIndex(plateId, page, size))
+	// 获取最晚回复
+	followIdArr := make([]int, len(res))
+	resMap := make(map[int]*ForumPost)
+	for i := 0; i < len(res); i++ {
+		followIdArr[i] = res[i].Id
+		resMap[res[i].Id] = &res[i]
+	}
+	lastRes := TransferForumPostListModel(model.GetLastPostList(followIdArr, 5))
+	for i := len(lastRes) - 1; i > -1; i-- {
+		resMap[lastRes[i].FollowId].LastReplyArr = append(resMap[lastRes[i].FollowId].LastReplyArr, lastRes[i])
+	}
 	return res
 }
 

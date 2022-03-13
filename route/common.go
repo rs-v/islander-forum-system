@@ -18,31 +18,6 @@ func remoteIp(req *http.Request) string {
 	return ip
 }
 
-func remoteIpItem(req *http.Request) string {
-	remoteAddr := req.RemoteAddr
-	if remoteAddr != "" {
-		return remoteAddr
-	}
-	remoteAddr = req.Header.Get("ipv4")
-	if remoteAddr != "" {
-		return remoteAddr
-	}
-	remoteAddr = req.Header.Get("XForwardedFor")
-	if remoteAddr != "" {
-		return remoteAddr
-	}
-	remoteAddr = req.Header.Get("X-Forwarded-For")
-	if remoteAddr != "" {
-		return remoteAddr
-	}
-	remoteAddr = req.Header.Get("X-Real_Ip")
-	if remoteAddr != "" {
-		return remoteAddr
-	} else {
-		return "127.0.0.1"
-	}
-}
-
 func write(w http.ResponseWriter, data interface{}) {
 	w.WriteHeader(http.StatusOK)
 	enc := json.NewEncoder(w)

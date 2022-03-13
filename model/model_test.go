@@ -25,3 +25,7 @@ func TestUser(t *testing.T) {
 	// fmt.Println(GetUserById(2), GetUserByToken("233"), GetUserArr([]int{1, 2, 3}))
 	fmt.Println(GetUserArr([]int{1, 2, 3}))
 }
+
+func TestGetLastList(t *testing.T) {
+	fmt.Println(GetLastPostList([]int{0, 1}, 2))
+}

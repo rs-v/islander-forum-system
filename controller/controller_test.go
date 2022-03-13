@@ -5,6 +5,9 @@ import (
 	"testing"
 )
 
+func TestGetForumIndex(t *testing.T) {
+	fmt.Println(GetForumPostIndex(1, 0, 10))
+}
 func TestGetForumPost(t *testing.T) {
 	// ReplyForumPost("test", 1, nil, 1, "")
 	// PostForumPost("test", "test", nil, 1, 1, "")
