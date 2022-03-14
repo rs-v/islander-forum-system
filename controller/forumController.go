@@ -68,8 +68,9 @@ func GetForumPost(postId int) (ForumPost, error) {
 }
 
 // 获取板块首页
-func GetForumPostIndex(plateId int, page int, size int) []ForumPost {
-	res := TransferForumPostListModel(model.GetForumPostIndex(plateId, page, size))
+func GetForumPostIndex(plateId int, page int, size int) ([]ForumPost, int) {
+	modelRes, count := model.GetForumPostIndex(plateId, page, size)
+	res := TransferForumPostListModel(modelRes)
 	// 获取最晚回复
 	followIdArr := make([]int, len(res))
 	resMap := make(map[int]*ForumPost)
@@ -81,25 +82,17 @@ func GetForumPostIndex(plateId int, page int, size int) []ForumPost {
 	for i := len(lastRes) - 1; i > -1; i-- {
 		resMap[lastRes[i].FollowId].LastReplyArr = append(resMap[lastRes[i].FollowId].LastReplyArr, lastRes[i])
 	}
-	return res
+	return res, count
 }
 
 // 获取串页
-func GetForumPostList(postId int, page int, size int) ([]ForumPost, error) {
+func GetForumPostList(postId int, page int, size int) ([]ForumPost, int, error) {
 	if _, err := GetForumPost(postId); err != nil {
-		return nil, err
+		return nil, 0, err
 	}
-	res := TransferForumPostListModel(model.GetForumPostList(postId, page, size))
-	return res, nil
-}
-
-// 获取总数
-func GetForumPostIndexCount(plateId int) int {
-	return model.GetForumPostIndexCount(plateId)
-}
-
-func GetForumPostListCount(postId int) int {
-	return model.GetForumPostListCount(postId)
+	modelRes, count := model.GetForumPostList(postId, page, size)
+	res := TransferForumPostListModel(modelRes)
+	return res, count, nil
 }
 
 // 发串

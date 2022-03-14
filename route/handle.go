@@ -38,8 +38,7 @@ func getForumPostIndex(w http.ResponseWriter, r *http.Request) {
 	plateId, _ := strconv.Atoi(query["plateId"])
 	page, _ := strconv.Atoi(query["page"])
 	size, _ := strconv.Atoi(query["size"])
-	list := controller.GetForumPostIndex(plateId, page, size)
-	count := controller.GetForumPostIndexCount(plateId)
+	list, count := controller.GetForumPostIndex(plateId, page, size)
 	writeList(w, list, count)
 }
 
@@ -48,11 +47,10 @@ func getForumPostList(w http.ResponseWriter, r *http.Request) {
 	postId, _ := strconv.Atoi(query["postId"])
 	page, _ := strconv.Atoi(query["page"])
 	size, _ := strconv.Atoi(query["size"])
-	list, err := controller.GetForumPostList(postId, page, size)
+	list, count, err := controller.GetForumPostList(postId, page, size)
 	if err != nil {
 		writeError(w, 404, err.Error())
 	} else {
-		count := controller.GetForumPostListCount(postId)
 		writeList(w, list, count)
 	}
 }

@@ -10,11 +10,7 @@ func TestGetIndex(t *testing.T) {
 }
 
 func TestGetList(t *testing.T) {
-	fmt.Println(GetForumPostList(1, 0, 10))
-}
-
-func TestCount(t *testing.T) {
-	fmt.Println(GetForumPostIndexCount(1), GetForumPostListCount(1))
+	fmt.Println(GetForumPostList(1, 0, 2))
 }
 
 func TestUpdate(t *testing.T) {
