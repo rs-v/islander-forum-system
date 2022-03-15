@@ -52,13 +52,6 @@ func GetForumPostIndex(plateId int, page int, size int) ([]ForumPost, int) {
 	return res, int(count)
 }
 
-// func GetForumPostIndexCount(plateId int) int {
-// 	var count int64
-// 	db := newDB()
-// 	db.Model(&ForumPost{}).Where("plate_id = ? and follow_id = 0 and status = 0", plateId).Count(&count)
-// 	return int(count)
-// }
-
 func GetForumPostList(postId int, page int, size int) ([]ForumPost, int) {
 	first := page * size
 	var res []ForumPost
@@ -67,13 +60,6 @@ func GetForumPostList(postId int, page int, size int) ([]ForumPost, int) {
 	db.Limit(size).Offset(first).Where("(follow_id = ? and status = 0) or id = ?", postId, postId).Order("time asc").Find(&res).Limit(-1).Offset(-1).Count(&count)
 	return res, int(count)
 }
-
-// func GetForumPostListCount(postId int) int {
-// 	var count int64
-// 	db := newDB()
-// 	db.Model(&ForumPost{}).Where("follow_id = ? and status = 0", postId).Count(&count)
-// 	return int(count)
-// }
 
 func GetLastPostList(followIdArr []int, count int) []ForumPost {
 	var res []ForumPost

@@ -10,7 +10,7 @@ import (
 
 func getDsn() string {
 	conf := config.GetConfig()
-	dsn := conf.UserName + ":" + conf.PassWord + "@tcp(" + conf.Ip + ")/" + conf.Database
+	dsn := conf.UserName + ":" + conf.PassWord + "@tcp(" + conf.Ip + ")/" + conf.Database + "?charset=utf8&timeout=30s"
 	return dsn
 }
 
