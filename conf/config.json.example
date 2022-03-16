@@ -4,5 +4,6 @@
     "ip": "",
     "database": "",
     "sageNum": 20,
-    "rpcIp": ""
+    "rpcIp": "",
+    "redisIp": ""
 }

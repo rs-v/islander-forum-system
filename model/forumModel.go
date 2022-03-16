@@ -1,6 +1,9 @@
 package model
 
 import (
+	"strconv"
+	"time"
+
 	"gorm.io/gorm"
 )
 
@@ -43,6 +46,7 @@ func GetForumPost(postId int) (ForumPost, error) {
 	return res, err
 }
 
+// 增加buff版本
 func GetForumPostIndex(plateId int, page int, size int) ([]ForumPost, int) {
 	first := page * size
 	var res []ForumPost
@@ -61,6 +65,7 @@ func GetForumPostList(postId int, page int, size int) ([]ForumPost, int) {
 	return res, int(count)
 }
 
+// 增加buff版本
 func GetLastPostList(followIdArr []int, count int) []ForumPost {
 	var res []ForumPost
 	db := newDB()
@@ -83,16 +88,57 @@ func GetAlreadySageCount() int {
 	return int(count)
 }
 
+// 新增buff版本，更新
 func SaveForumPost(post ForumPost) int {
 	db := newDB()
 	db.Create(&post)
 	return post.Id
 }
 
+// 新增buff版本
 func SaveForumReply(post ForumPost) int {
 	db := newDB()
 	db.Create(&post)
 	return post.Id
+}
+
+func setCount(key string, count int) {
+	rdb := newRdb()
+	rdb.Set(ctx, key, count, time.Second*30)
+}
+
+func initForumIndexBuff(postArr []ForumPost, plateId int) {
+	rdb := newRdb()
+	key := "postIndex" + strconv.Itoa(plateId)
+	rdb.Del(ctx, key).Result()
+	for i := 0; i < len(postArr); i++ {
+		setForumIndexBuff(postArr[i])
+	}
+}
+
+func initForumReplyBuff(postArr []ForumPost, followId int) {
+	rdb := newRdb()
+	key := "postReply" + strconv.Itoa(followId)
+	rdb.Del(ctx, key).Result()
+	for i := 0; i < len(postArr); i++ {
+		setForumReplyBuff(postArr[i])
+	}
+}
+
+func setForumIndexBuff(post ForumPost) {
+	rdb := newRdb()
+	score := post.LastReplyTime
+	post.LastReplyTime = 0
+	key := "postIndex:" + strconv.Itoa(post.PlateId)
+	AddZsetBuff(key, score, post)
+	rdb.Expire(ctx, key, time.Second*30)
+}
+
+func setForumReplyBuff(post ForumPost) {
+	rdb := newRdb()
+	key := "postReply:" + strconv.Itoa(post.FollowId)
+	AddZsetBuff(key, post.Time, post)
+	rdb.Expire(ctx, key, time.Second*30)
 }
 
 func UpdateForumPostCount(postId int, time int) {

@@ -13,6 +13,7 @@ type Config struct {
 	Database string
 	SageNum  int
 	RpcIp    string
+	RedisIp  string
 }
 
 func GetConfig() Config {
