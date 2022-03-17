@@ -4,6 +4,8 @@ import (
 	"context"
 	"encoding/json"
 	"log"
+	"strconv"
+	"time"
 
 	"github.com/forum_server/config"
 	"github.com/go-redis/redis/v8"
@@ -12,6 +14,9 @@ import (
 )
 
 var ctx = context.Background()
+
+// 时间从设置里拿
+var buffTime = time.Second * 30
 
 func getDsn() string {
 	conf := config.GetConfig()
@@ -37,7 +42,7 @@ func newDB() *gorm.DB {
 	return db
 }
 
-func AddZsetBuff(key string, score int, data interface{}) {
+func addZsetBuff(key string, score int, data interface{}) {
 	value, _ := json.Marshal(data)
 	rdb := newRdb()
 	err := rdb.ZAdd(ctx, key, &redis.Z{
@@ -49,13 +54,62 @@ func AddZsetBuff(key string, score int, data interface{}) {
 	}
 }
 
-func GetZsetArr(key string, first int64, end int64) []string {
+func getZsetArr(key string, first int64, end int64) []string {
 	rdb := newRdb()
-	res, err := rdb.ZRevRange(ctx, "post", first, end).Result()
+	res, err := rdb.ZRevRange(ctx, key, first, end).Result()
 	if err != nil {
 		log.Println(err)
 	}
+	rdb.Expire(ctx, key, buffTime)
 	return res
+}
+
+func getZsetCount(key string) int {
+	rdb := newRdb()
+	num, err := rdb.ZCard(ctx, key).Result()
+	if err != nil {
+		log.Println(err)
+	}
+	return int(num)
+}
+
+func checkKey(key string) bool {
+	rdb := newRdb()
+	num, err := rdb.Exists(ctx, key).Result()
+	if err != nil {
+		log.Println(err)
+	}
+	if num > 0 {
+		return true
+	} else {
+		return false
+	}
+}
+
+func tranPost(buffArr []string) []ForumPost {
+	res := make([]ForumPost, len(buffArr))
+	for i := 0; i < len(buffArr); i++ {
+		json.Unmarshal([]byte(buffArr[i]), &res[i])
+	}
+	return res
+}
+
+func setCount(key string, count int) {
+	rdb := newRdb()
+	rdb.Set(ctx, key, count, time.Second)
+}
+
+func getCount(key string) int {
+	rdb := newRdb()
+	buff, err := rdb.Get(ctx, key).Result()
+	if err != nil {
+		log.Println(err)
+	}
+	count, err := strconv.Atoi(buff)
+	if err != nil {
+		log.Println(err)
+	}
+	return count
 }
 
 // func get(query string, res ...interface{}) {

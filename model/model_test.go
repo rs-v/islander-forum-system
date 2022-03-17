@@ -25,3 +25,7 @@ func TestUser(t *testing.T) {
 func TestGetLastList(t *testing.T) {
 	fmt.Println(GetLastPostList([]int{0, 1}, 2))
 }
+
+func TestGetBuff(t *testing.T) {
+	fmt.Println(GetForumPostIndexBuff(1, 0, 10))
+}

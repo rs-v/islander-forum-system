@@ -2,7 +2,6 @@ package model
 
 import (
 	"strconv"
-	"time"
 
 	"gorm.io/gorm"
 )
@@ -46,6 +45,40 @@ func GetForumPost(postId int) (ForumPost, error) {
 	return res, err
 }
 
+func GetForumPostIndexBuff(plateId int, page, size int) ([]ForumPost, int) {
+	// forumServe:postIndex:plateId
+	key := "fS:pI:" + strconv.Itoa(plateId)
+	first := page * size
+	end := first + size
+	var res []ForumPost
+	var count int
+	// forumServe:postIndexCount:plateId
+	countKey := "fs:pIC:" + strconv.Itoa(plateId)
+	if checkKey(key) { // 读时更新
+		if end < getZsetCount(key) {
+			buffRes := getZsetArr(key, int64(first), int64(end))
+			res = tranPost(buffRes)
+			if checkKey(countKey) {
+				count = getCount(countKey)
+			} else {
+				count = getForumPostIndexCount(plateId)
+				setCount(countKey, count)
+			}
+		} else {
+			res, count = GetForumPostIndex(plateId, page, size)
+		}
+	} else { // 读入前一百缓存
+		res, count = GetForumPostIndex(plateId, 0, 100)
+		setCount(countKey, count)
+		initForumIndexBuff(res, plateId)
+		res, count = GetForumPostIndex(plateId, page, size)
+	}
+	return res, count
+}
+
+// 获取帖子最后回复
+func GetForumPostLastBuff() {}
+
 // 增加buff版本
 func GetForumPostIndex(plateId int, page int, size int) ([]ForumPost, int) {
 	first := page * size
@@ -56,6 +89,13 @@ func GetForumPostIndex(plateId int, page int, size int) ([]ForumPost, int) {
 	return res, int(count)
 }
 
+func getForumPostIndexCount(plateId int) int {
+	var count int64
+	db := newDB()
+	db.Model(ForumPost{}).Where("plate_id = ? and follow_id = 0 and status = 0", plateId).Count(&count)
+	return int(count)
+}
+
 func GetForumPostList(postId int, page int, size int) ([]ForumPost, int) {
 	first := page * size
 	var res []ForumPost
@@ -63,6 +103,13 @@ func GetForumPostList(postId int, page int, size int) ([]ForumPost, int) {
 	db := newDB()
 	db.Limit(size).Offset(first).Where("(follow_id = ? and status = 0) or id = ?", postId, postId).Order("time asc").Find(&res).Limit(-1).Offset(-1).Count(&count)
 	return res, int(count)
+}
+
+func getForumPostListCount(postId int) int {
+	var count int64
+	db := newDB()
+	db.Where("(follow_id = ? and status = 0) or id = ?", postId, postId).Count(&count)
+	return int(count)
 }
 
 // 增加buff版本
@@ -88,57 +135,48 @@ func GetAlreadySageCount() int {
 	return int(count)
 }
 
-// 新增buff版本，更新
+// 新增buff版本，删除缓存
 func SaveForumPost(post ForumPost) int {
 	db := newDB()
 	db.Create(&post)
 	return post.Id
 }
 
-// 新增buff版本
+// 新增buff版本，删除缓存
 func SaveForumReply(post ForumPost) int {
 	db := newDB()
 	db.Create(&post)
 	return post.Id
 }
 
-func setCount(key string, count int) {
-	rdb := newRdb()
-	rdb.Set(ctx, key, count, time.Second*30)
-}
-
 func initForumIndexBuff(postArr []ForumPost, plateId int) {
-	rdb := newRdb()
-	key := "postIndex" + strconv.Itoa(plateId)
-	rdb.Del(ctx, key).Result()
 	for i := 0; i < len(postArr); i++ {
 		setForumIndexBuff(postArr[i])
 	}
 }
 
 func initForumReplyBuff(postArr []ForumPost, followId int) {
-	rdb := newRdb()
-	key := "postReply" + strconv.Itoa(followId)
-	rdb.Del(ctx, key).Result()
 	for i := 0; i < len(postArr); i++ {
 		setForumReplyBuff(postArr[i])
 	}
 }
 
+// 设置首页缓存
 func setForumIndexBuff(post ForumPost) {
 	rdb := newRdb()
 	score := post.LastReplyTime
 	post.LastReplyTime = 0
-	key := "postIndex:" + strconv.Itoa(post.PlateId)
-	AddZsetBuff(key, score, post)
-	rdb.Expire(ctx, key, time.Second*30)
+	key := "fS:pI:" + strconv.Itoa(post.PlateId)
+	addZsetBuff(key, score, post)
+	rdb.Expire(ctx, key, buffTime)
 }
 
+// 设置回复缓存
 func setForumReplyBuff(post ForumPost) {
 	rdb := newRdb()
-	key := "postReply:" + strconv.Itoa(post.FollowId)
-	AddZsetBuff(key, post.Time, post)
-	rdb.Expire(ctx, key, time.Second*30)
+	key := "fS:pR:" + strconv.Itoa(post.FollowId)
+	addZsetBuff(key, post.Time, post)
+	rdb.Expire(ctx, key, buffTime)
 }
 
 func UpdateForumPostCount(postId int, time int) {
