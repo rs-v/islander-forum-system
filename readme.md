@@ -10,3 +10,17 @@
 
 ## 接口文档
 通过apiPost生成的接口文档[地址](https://docs.apipost.cn/preview/b58077f3ebc9caeb/6a197cc600cf6f5c)
+
+## 配置文件
+```json
+{
+    "userName": "", // 数据库用户名
+    "passWord": "", // 数据库密码
+    "ip": "",       // 数据库地址
+    "database": "", // 数据库名称
+    "sageNum": 20,  // sage差值
+    "rpcIp": "",    // userServer的地址
+    "redisIp": "",  // redis地址
+    "buffTime": 0,  // redis数据缓存时间，单位秒
+}
+```

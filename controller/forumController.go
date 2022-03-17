@@ -69,16 +69,33 @@ func GetForumPost(postId int) (ForumPost, error) {
 
 // 获取板块首页
 func GetForumPostIndex(plateId int, page int, size int) ([]ForumPost, int) {
-	modelRes, count := model.GetForumPostIndex(plateId, page, size)
+	// 缓存版
+	modelRes, count := model.GetForumPostIndexBuff(plateId, page, size)
+	// 无缓存版
+	// modelRes, count := model.GetForumPostIndex(plateId, page, size)
 	res := TransferForumPostListModel(modelRes)
-	// 获取最晚回复
-	followIdArr := make([]int, len(res))
+	// 获取最晚回复，最晚回复时间非自己
+	// 用一次遍历获取所需内存分配
+	replyIndexCount := 0
+	for i := 0; i < len(res); i++ {
+		if res[i].Time != res[i].LastReplyTime {
+			replyIndexCount += 1
+		}
+	}
+	followIdArr := make([]int, replyIndexCount)
+	replyIndex := 0
 	resMap := make(map[int]*ForumPost)
 	for i := 0; i < len(res); i++ {
-		followIdArr[i] = res[i].Id
-		resMap[res[i].Id] = &res[i]
+		if res[i].Time != res[i].LastReplyTime {
+			followIdArr[replyIndex] = res[i].Id
+			resMap[res[i].Id] = &res[i]
+			replyIndex += 1
+		}
 	}
-	lastRes := TransferForumPostListModel(model.GetLastPostList(followIdArr, 5))
+	// 缓存版
+	lastRes := TransferForumPostListModel(model.GetLastPostListBuff(followIdArr, 5))
+	// 无缓存版
+	// lastRes := TransferForumPostListModel(model.GetLastPostList(followIdArr, 5))
 	for i := len(lastRes) - 1; i > -1; i-- {
 		resMap[lastRes[i].FollowId].LastReplyArr = append(resMap[lastRes[i].FollowId].LastReplyArr, lastRes[i])
 	}

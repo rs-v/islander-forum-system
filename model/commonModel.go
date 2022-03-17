@@ -16,7 +16,7 @@ import (
 var ctx = context.Background()
 
 // 时间从设置里拿
-var buffTime = time.Second * 30
+var buffTime = time.Second * time.Duration(config.GetConfig().BuffTime)
 
 func getDsn() string {
 	conf := config.GetConfig()
@@ -73,6 +73,15 @@ func getZsetCount(key string) int {
 	return int(num)
 }
 
+func delKey(key string) int {
+	rdb := newRdb()
+	num, err := rdb.Del(ctx, key).Result()
+	if err != nil {
+		log.Println(err)
+	}
+	return int(num)
+}
+
 func checkKey(key string) bool {
 	rdb := newRdb()
 	num, err := rdb.Exists(ctx, key).Result()
@@ -96,7 +105,7 @@ func tranPost(buffArr []string) []ForumPost {
 
 func setCount(key string, count int) {
 	rdb := newRdb()
-	rdb.Set(ctx, key, count, time.Second)
+	rdb.Set(ctx, key, count, buffTime)
 }
 
 func getCount(key string) int {

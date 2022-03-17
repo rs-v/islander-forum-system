@@ -14,6 +14,7 @@ type Config struct {
 	SageNum  int
 	RpcIp    string
 	RedisIp  string
+	BuffTime int
 }
 
 func GetConfig() Config {
