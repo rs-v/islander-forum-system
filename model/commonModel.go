@@ -21,7 +21,7 @@ var buffTime = time.Second * time.Duration(config.GetConfig().BuffTime)
 
 func getDsn() string {
 	conf := config.GetConfig()
-	dsn := conf.UserName + ":" + conf.PassWord + "@tcp(" + conf.Ip + ")/" + conf.Database + "?charset=utf8&timeout=30s"
+	dsn := conf.UserName + ":" + conf.PassWord + "@tcp(" + conf.Ip + ")/" + conf.Database + "?charset=utf8mb4&timeout=30s"
 	return dsn
 }
 
@@ -40,6 +40,10 @@ func newDB() *gorm.DB {
 	if err != nil {
 		log.Fatal(err)
 	}
+	sqlDb, _ := db.DB()
+	sqlDb.SetMaxIdleConns(10)
+	sqlDb.SetMaxOpenConns(50)
+	sqlDb.SetConnMaxLifetime(time.Hour)
 	return db
 }
 

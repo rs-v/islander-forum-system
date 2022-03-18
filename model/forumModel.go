@@ -1,7 +1,6 @@
 package model
 
 import (
-	"fmt"
 	"strconv"
 
 	"gorm.io/gorm"
@@ -85,11 +84,11 @@ func GetLastPostListBuff(postIdArr []int, count int) []ForumPost {
 		// forumServer:postLastReply:postId
 		key := "fS:pLR:" + strconv.Itoa(postIdArr[i])
 		if checkKey(key) {
-			fmt.Println("succ", postIdArr[i])
+			// fmt.Println("succ", postIdArr[i])
 			buffRes := getZsetArr(key, int64(0), int64(count-1))
 			res = append(res, tranPost(buffRes)...)
 		} else {
-			fmt.Println("miss", postIdArr[i])
+			// fmt.Println("miss", postIdArr[i])
 			missKey = append(missKey, postIdArr[i])
 		}
 	}
