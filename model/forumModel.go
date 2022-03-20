@@ -29,6 +29,7 @@ type ForumPlate struct {
 	Id     int
 	Name   string
 	Status int
+	Value  string
 }
 
 func GetForumPlate() ([]ForumPlate, error) {
@@ -248,6 +249,14 @@ func setLastReplyBuff(post ForumPost) {
 	key := "fS:pLR:" + strconv.Itoa(post.FollowId)
 	addZsetBuff(key, post.Time, post)
 	rdb.Expire(ctx, key, buffTime)
+}
+
+func ChangePostPlate(post ForumPost, plateId int) {
+
+}
+
+func changeFollowPostPlate(followId int, plateId int) {
+
 }
 
 func (ForumPost) TableName() string {

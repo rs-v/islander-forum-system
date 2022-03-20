@@ -34,6 +34,7 @@ type ForumPlate struct {
 	Id     int    `json:"id"`
 	Name   string `json:"name"`
 	Status int    `json:"status"`
+	Value  string `json:"value"`
 }
 
 func NewForumPost(value string, plateId int, userId int) *ForumPost {
@@ -209,6 +210,10 @@ func SageSet(post ForumPost) {
 func GetAlreadySagePost(page int, size int) []ForumPost {
 	res := model.GetAlreadySagePost(page, size)
 	return TransferForumPostListModel(res)
+}
+
+func ChangePostPlate() {
+
 }
 
 func findIntArr(arr []int, id int) bool {
