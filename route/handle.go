@@ -7,7 +7,6 @@ import (
 	"strconv"
 
 	"github.com/forum_server/controller"
-	"github.com/forum_server/model"
 )
 
 func getForumPlate(w http.ResponseWriter, r *http.Request) {
@@ -154,7 +153,7 @@ func sageList(w http.ResponseWriter, r *http.Request) {
 	query := get(r)
 	page, _ := strconv.Atoi(query["page"])
 	size, _ := strconv.Atoi(query["size"])
-	list := controller.GetAlreadySagePost(page, size)
-	count := model.GetAlreadySageCount()
+	list, count := controller.GetAlreadySagePost(page, size)
+	// count := model.GetAlreadySageCount()
 	writeList(w, list, count)
 }

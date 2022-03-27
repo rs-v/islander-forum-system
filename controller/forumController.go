@@ -207,9 +207,9 @@ func SageSet(post ForumPost) {
 	}
 }
 
-func GetAlreadySagePost(page int, size int) []ForumPost {
-	res := model.GetAlreadySagePost(page, size)
-	return TransferForumPostListModel(res)
+func GetAlreadySagePost(page int, size int) ([]ForumPost, int) {
+	res, count := model.GetAlreadySagePost(page, size)
+	return TransferForumPostListModel(res), count
 }
 
 func ChangePostPlate() {

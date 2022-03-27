@@ -142,19 +142,13 @@ func GetLastPostList(followIdArr []int, count int) []ForumPost {
 	return res
 }
 
-func GetAlreadySagePost(page int, size int) []ForumPost {
+func GetAlreadySagePost(page int, size int) ([]ForumPost, int) {
 	first := page * size
 	var res []ForumPost
-	// db := newDB()
-	db.Limit(size).Offset(first).Where("status = 1").Order("time desc").Find(&res)
-	return res
-}
-
-func GetAlreadySageCount() int {
 	var count int64
 	// db := newDB()
-	db.Model(&ForumPost{}).Where("status = 1").Count(&count)
-	return int(count)
+	db.Limit(size).Offset(first).Where("status = 1").Order("time desc").Find(&res).Limit(-1).Offset(-1).Count(&count)
+	return res, int(count)
 }
 
 // 新增buff版本，删除首页缓存
