@@ -57,6 +57,11 @@ func GetForumPlate() ([]ForumPlate, error) {
 	return TransferForumPlateArrModel(res), nil
 }
 
+func GetForumIndexLastTime(page, size int) ([]ForumPost, int) {
+	res, count := model.GetForumIndexLastTime(page, size)
+	return TransferForumPostListModel(res), count
+}
+
 // 获取单个串
 func GetForumPost(postId int) (ForumPost, error) {
 	resModel, err := model.GetForumPost(postId)

@@ -37,6 +37,6 @@ func TestGetReplyBuff(t *testing.T) {
 	fmt.Println(res)
 }
 
-func TestDelKey(t *testing.T) {
-	fmt.Println(delKey("123"))
+func TestLastTime(t *testing.T) {
+	fmt.Println(GetForumIndexLastTime(1, 10))
 }

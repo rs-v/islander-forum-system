@@ -20,3 +20,7 @@ func TestSage(t *testing.T) {
 func TestForum(t *testing.T) {
 	fmt.Println(GetForumPlate())
 }
+
+func TestGetLast(t *testing.T) {
+	fmt.Println(GetForumIndexLastTime(0, 10))
+}

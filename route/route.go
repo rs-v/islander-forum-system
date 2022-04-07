@@ -15,6 +15,7 @@ func Init() *http.ServeMux {
 	forumServer.Handle("/forum/get", mid(getForumPost))
 	forumServer.Handle("/forum/index", mid(getForumPostIndex))
 	forumServer.Handle("/forum/list", mid(getForumPostList))
+	forumServer.Handle("/forum/indexLast", mid(getForumIndexLastTime))
 	forumServer.Handle("/forum/post", mid(postForumPost))
 	forumServer.Handle("/forum/reply", mid(replyForumPost))
 	forumServer.Handle("/forum/sage/add", mid(sageAdd))

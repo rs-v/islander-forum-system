@@ -18,6 +18,14 @@ func getForumPlate(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func getForumIndexLastTime(w http.ResponseWriter, r *http.Request) {
+	query := get(r)
+	page, _ := strconv.Atoi(query["page"])
+	size, _ := strconv.Atoi(query["size"])
+	list, count := controller.GetForumIndexLastTime(page, size)
+	writeList(w, list, count)
+}
+
 func getForumPost(w http.ResponseWriter, r *http.Request) {
 	query := get(r)
 	postId, err := strconv.Atoi(query["postId"])
