@@ -58,8 +58,10 @@ func GetForumPlate() ([]ForumPlate, error) {
 }
 
 func GetForumIndexLastTime(page, size int) ([]ForumPost, int) {
-	res, count := model.GetForumIndexLastTime(page, size)
-	return TransferForumPostListModel(res), count
+	modelRes, count := model.GetForumIndexLastTime(page, size)
+	res := TransferForumPostListModel(modelRes)
+	getLastReply(res)
+	return res, count
 }
 
 // 获取单个串
@@ -80,6 +82,11 @@ func GetForumPostIndex(plateId int, page int, size int) ([]ForumPost, int) {
 	// 无缓存版
 	// modelRes, count := model.GetForumPostIndex(plateId, page, size)
 	res := TransferForumPostListModel(modelRes)
+	getLastReply(res)
+	return res, count
+}
+
+func getLastReply(res []ForumPost) {
 	// 获取最晚回复，最晚回复时间非自己
 	// 用一次遍历获取所需内存分配
 	replyIndexCount := 0
@@ -105,7 +112,6 @@ func GetForumPostIndex(plateId int, page int, size int) ([]ForumPost, int) {
 	for i := len(lastRes) - 1; i > -1; i-- {
 		resMap[lastRes[i].FollowId].LastReplyArr = append(resMap[lastRes[i].FollowId].LastReplyArr, lastRes[i])
 	}
-	return res, count
 }
 
 // 获取串页
