@@ -136,6 +136,15 @@ func getForumPostListCount(postId int) int {
 	return int(count)
 }
 
+// 根据用户uid获取过往发言
+func GetForumPostListByUid(uid int, page, size int) ([]ForumPost, int) {
+	first := page * size
+	var res []ForumPost
+	var count int64
+	db.Limit(size).Offset(first).Where("user_id = ?", uid).Order("time asc").Find(&res).Limit(-1).Offset(-1).Count(&count)
+	return res, int(count)
+}
+
 // 增加buff版本
 func GetLastPostList(followIdArr []int, count int) []ForumPost {
 	var res []ForumPost
@@ -185,10 +194,14 @@ func UpdateForumPostCount(postId int, time int) {
 
 func UpdateSageAdd(post ForumPost) {
 	db.Model(&post).Update("sage_add_id", post.SageAddId)
+	indexKey := "fS:pI:" + strconv.Itoa(post.PlateId)
+	delKey(indexKey)
 }
 
 func UpdateSageSub(post ForumPost) {
 	db.Model(&post).Update("sage_sub_id", post.SageSubId)
+	indexKey := "fS:pI:" + strconv.Itoa(post.PlateId)
+	delKey(indexKey)
 }
 
 func UpdateForumPostStatus(post ForumPost, status int) {

@@ -3,6 +3,8 @@ package controller
 import (
 	"fmt"
 	"testing"
+
+	"github.com/forum_server/model"
 )
 
 func TestGetForumIndex(t *testing.T) {
@@ -24,4 +26,17 @@ func TestForum(t *testing.T) {
 
 func TestGetLast(t *testing.T) {
 	fmt.Println(GetForumIndexLastTime(0, 10))
+}
+
+func TestDelIntArr(t *testing.T) {
+	arr := delIntArr([]int{1, 2, 3}, 1)
+	fmt.Println(arr)
+}
+
+func TestGetUserArr(t *testing.T) {
+	fmt.Println(model.GetUserArr([]int{}))
+}
+
+func TestGetForumPostByUid(t *testing.T) {
+	fmt.Println(GetForumPostByUid(1, 0, 10))
 }

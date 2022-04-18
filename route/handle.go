@@ -128,11 +128,11 @@ func sageAdd(w http.ResponseWriter, r *http.Request) {
 		writeError(w, 403, err.Error())
 		return
 	}
-	err = controller.SageAdd(postId, user.Id)
+	sageStatus, err := controller.SageAdd(postId, user.Id)
 	if err != nil {
 		writeError(w, 403, err.Error())
 	} else {
-		write(w, nil)
+		write(w, sageStatus)
 	}
 }
 
@@ -149,11 +149,11 @@ func sageSub(w http.ResponseWriter, r *http.Request) {
 		writeError(w, 403, err.Error())
 		return
 	}
-	err = controller.SageSub(postId, user.Id)
+	sageStatus, err := controller.SageSub(postId, user.Id)
 	if err != nil {
 		writeError(w, 403, err.Error())
 	} else {
-		write(w, nil)
+		write(w, sageStatus)
 	}
 }
 

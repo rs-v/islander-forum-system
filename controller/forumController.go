@@ -28,6 +28,8 @@ type ForumPost struct {
 	SageSubCount  int         `json:"sageSubCount"`
 	Name          string      `json:"name"`
 	LastReplyArr  []ForumPost `json:"lastReplyArr"`
+	SageAddUser   []string    `json:"sageAddUser"`
+	SageSubUser   []string    `json:"sageSubUser"`
 }
 
 type ForumPlate struct {
@@ -124,6 +126,13 @@ func GetForumPostList(postId int, page int, size int) ([]ForumPost, int, error) 
 	return res, count, nil
 }
 
+// 通过uid获取发言
+func GetForumPostByUid(uid int, page, size int) ([]ForumPost, int) {
+	modelRes, count := model.GetForumPostListByUid(uid, page, size)
+	res := TransferForumPostListModel(modelRes)
+	return res, count
+}
+
 // 发串
 func PostForumPost(value string, title string, replyArr []int, plateId int, userId int, mediaUrl string, name string) error {
 	if value == "" || len(value) > 1024 || len(title) > 128 || len(mediaUrl) > 2048 {
@@ -174,41 +183,68 @@ func ReplyForumPost(value string, followId int, replyArr []int, userId int, medi
 }
 
 // sage添加
-func SageAdd(postId int, userId int) error {
+func SageAdd(postId int, userId int) (bool, error) {
 	post, err := GetForumPost(postId)
 	if err != nil {
-		return err
+		return false, err
 	}
 	if post.Status != 0 {
-		return errors.New("it's sage")
+		return false, errors.New("it's sage")
 	}
-	ok := findIntArr(post.SageAddId, userId)
-	if !ok {
+	addOk := findIntArr(post.SageAddId, userId)
+	subOk := findIntArr(post.SageSubId, userId)
+
+	// 是否已经反对sage
+	if subOk {
+		// 取消反sage
+		post.SageSubId = delIntArr(post.SageSubId, userId)
+		model.UpdateSageSub(transferForumPost(post))
+	}
+
+	sageStatus := true
+	// 是否已经同意sage
+	if !addOk {
 		post.SageAddId = append(post.SageAddId, userId)
 		model.UpdateSageAdd(transferForumPost(post))
 		SageSet(post)
+
 	} else {
 		// 取消sage
-		return errors.New("you already sage it")
+		post.SageAddId = delIntArr(post.SageAddId, userId)
+		model.UpdateSageAdd(transferForumPost(post))
+		sageStatus = false
 	}
-	return nil
+	return sageStatus, nil
 }
 
 // 反sage添加
-func SageSub(postId int, userId int) error {
+func SageSub(postId int, userId int) (bool, error) {
 	post, err := GetForumPost(postId)
 	if err != nil {
-		return err
+		return false, err
 	}
-	ok := findIntArr(post.SageSubId, userId)
-	if !ok {
+	addOk := findIntArr(post.SageAddId, userId)
+	subOk := findIntArr(post.SageSubId, userId)
+
+	// 是否已经同意sage
+	if addOk {
+		// 取消sage
+		post.SageAddId = delIntArr(post.SageAddId, userId)
+		model.UpdateSageAdd(transferForumPost(post))
+	}
+
+	sageStatus := true
+	// 是否已经反对sage
+	if !subOk {
 		post.SageSubId = append(post.SageSubId, userId)
 		model.UpdateSageSub(transferForumPost(post))
 	} else {
 		// 取消反sage
-		return errors.New("you already unsage it")
+		post.SageSubId = delIntArr(post.SageSubId, userId)
+		model.UpdateSageSub(transferForumPost(post))
+		sageStatus = false
 	}
-	return nil
+	return sageStatus, nil
 }
 
 func SageSet(post ForumPost) {
@@ -219,10 +255,35 @@ func SageSet(post ForumPost) {
 }
 
 func GetAlreadySagePost(page int, size int) ([]ForumPost, int) {
-	res, count := model.GetAlreadySagePost(page, size)
-	return TransferForumPostListModel(res), count
+	modelRes, count := model.GetAlreadySagePost(page, size)
+	res := TransferForumPostListModel(modelRes)
+	for i := 0; i < len(res); i++ {
+		userArr := model.GetUserArr(res[i].SageAddId)
+		pushSageUser(&res[i], userArr, 1)
+		userArr = model.GetUserArr(res[i].SageSubId)
+		pushSageUser(&res[i], userArr, 2)
+	}
+	return res, count
 }
 
+func pushSageUser(post *ForumPost, userArr []model.User, pushType int) {
+	switch pushType {
+	case 1:
+		post.SageAddUser = make([]string, len(userArr))
+		for i := 0; i < len(userArr); i++ {
+			post.SageAddUser[i] = userArr[i].Name
+		}
+		return
+	case 2:
+		post.SageSubUser = make([]string, len(userArr))
+		for i := 0; i < len(userArr); i++ {
+			post.SageSubUser[i] = userArr[i].Name
+		}
+		return
+	}
+}
+
+// 移版
 func ChangePostPlate() {
 
 }
@@ -234,4 +295,14 @@ func findIntArr(arr []int, id int) bool {
 		}
 	}
 	return false
+}
+
+func delIntArr(arr []int, id int) []int {
+	for i := 0; i < len(arr); i++ {
+		if arr[i] == id {
+			arr = append(arr[:i], arr[i+1:]...)
+			return arr
+		}
+	}
+	return arr
 }
