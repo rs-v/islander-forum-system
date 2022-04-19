@@ -26,6 +26,24 @@ func getForumIndexLastTime(w http.ResponseWriter, r *http.Request) {
 	writeList(w, list, count)
 }
 
+func getUserForumPostList(w http.ResponseWriter, r *http.Request) {
+	query := get(r)
+	page, _ := strconv.Atoi(query["page"])
+	size, _ := strconv.Atoi(query["size"])
+	token, ok := r.Header["Authorization"]
+	if !ok {
+		writeError(w, 403, errors.New("without Authorization").Error())
+		return
+	}
+	user, err := controller.GetUserByToken(token[0])
+	if err != nil {
+		writeError(w, 403, err.Error())
+		return
+	}
+	list, count := controller.GetForumPostByUid(user.Id, page, size)
+	writeList(w, list, count)
+}
+
 func getForumPost(w http.ResponseWriter, r *http.Request) {
 	query := get(r)
 	postId, err := strconv.Atoi(query["postId"])
