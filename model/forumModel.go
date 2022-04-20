@@ -141,7 +141,7 @@ func GetForumPostListByUid(uid int, page, size int) ([]ForumPost, int) {
 	first := page * size
 	var res []ForumPost
 	var count int64
-	db.Limit(size).Offset(first).Where("user_id = ?", uid).Order("time asc").Find(&res).Limit(-1).Offset(-1).Count(&count)
+	db.Limit(size).Offset(first).Where("user_id = ?", uid).Order("time desc").Find(&res).Limit(-1).Offset(-1).Count(&count)
 	return res, int(count)
 }
 
