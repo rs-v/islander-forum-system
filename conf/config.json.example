@@ -7,4 +7,6 @@
     "rpcIp": "",
     "redisIp": "",
     "buffTime": 0,
+    "imgUserName": "",
+    "imgPassWord": ""
 }

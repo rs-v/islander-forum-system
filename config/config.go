@@ -7,14 +7,16 @@ import (
 )
 
 type Config struct {
-	UserName string
-	PassWord string
-	Ip       string
-	Database string
-	SageNum  int
-	RpcIp    string
-	RedisIp  string
-	BuffTime int
+	UserName    string
+	PassWord    string
+	Ip          string
+	Database    string
+	SageNum     int
+	RpcIp       string
+	RedisIp     string
+	BuffTime    int
+	ImgUserName string
+	ImgPassWord string
 }
 
 func GetConfig() Config {

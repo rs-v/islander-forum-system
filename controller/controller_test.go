@@ -40,3 +40,7 @@ func TestGetUserArr(t *testing.T) {
 func TestGetForumPostByUid(t *testing.T) {
 	fmt.Println(GetForumPostByUid(1, 0, 10))
 }
+
+func TestGetImgToken(t *testing.T) {
+	fmt.Println(GetImgToken())
+}

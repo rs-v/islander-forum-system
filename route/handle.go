@@ -180,6 +180,26 @@ func sageList(w http.ResponseWriter, r *http.Request) {
 	page, _ := strconv.Atoi(query["page"])
 	size, _ := strconv.Atoi(query["size"])
 	list, count := controller.GetAlreadySagePost(page, size)
-	// count := model.GetAlreadySageCount()
 	writeList(w, list, count)
+}
+
+func getImgToken(w http.ResponseWriter, r *http.Request) {
+	token, ok := r.Header["Authorization"]
+	if !ok {
+		writeError(w, 403, errors.New("without Authorization").Error())
+		return
+	}
+	_, err := controller.GetUserByToken(token[0])
+	if err != nil {
+		writeError(w, 403, err.Error())
+		return
+	}
+	imgToken, err := controller.GetImgToken()
+	if err != nil {
+		writeError(w, 403, err.Error())
+		return
+	}
+	write(w, struct {
+		Token string `json:"token"`
+	}{Token: imgToken})
 }
