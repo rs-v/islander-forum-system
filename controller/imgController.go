@@ -1,10 +1,13 @@
 package controller
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"log"
+	"mime/multipart"
 	"net/http"
 	"net/url"
 
@@ -35,4 +38,30 @@ func GetImgToken() (string, error) {
 	}
 	token := resJson["data"].(map[string]interface{})["token"].(string)
 	return token, nil
+}
+
+func PostImgUpload(r *http.Request) {
+	// 获取文件
+	file, header, _ := r.FormFile("file")
+	buff := new(bytes.Buffer)
+	w := multipart.NewWriter(buff)
+	createFormFile, err := w.CreateFormFile("smfile", header.Filename)
+	if err == nil {
+		readAll, _ := ioutil.ReadAll(file)
+		createFormFile.Write(readAll)
+	}
+	w.Close()
+	// 写入文件
+	req, _ := http.NewRequest(http.MethodPost, "https://sm.ms/api/v2/upload", buff)
+
+	token, _ := GetImgToken()
+	req.Header.Set("Authorization", token)
+	req.Header.Set("Content-Type", w.FormDataContentType())
+	client := &http.Client{}
+	// 转发文件
+	res, err := client.Do(req)
+	if err != nil {
+		return
+	}
+	fmt.Println(res)
 }
