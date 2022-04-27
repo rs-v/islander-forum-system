@@ -203,3 +203,18 @@ func getImgToken(w http.ResponseWriter, r *http.Request) {
 		Token string `json:"token"`
 	}{Token: imgToken})
 }
+
+func postImgUpload(w http.ResponseWriter, r *http.Request) {
+	token, ok := r.Header["Authorization"]
+	if !ok {
+		writeError(w, 403, errors.New("without Authorization").Error())
+		return
+	}
+	_, err := controller.GetUserByToken(token[0])
+	if err != nil {
+		writeError(w, 403, err.Error())
+		return
+	}
+	res := controller.PostImgUpload(r)
+	write(w, res)
+}

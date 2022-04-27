@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"io/ioutil"
 	"log"
 	"mime/multipart"
@@ -40,28 +39,37 @@ func GetImgToken() (string, error) {
 	return token, nil
 }
 
-func PostImgUpload(r *http.Request) {
+func PostImgUpload(r *http.Request) interface{} {
 	// 获取文件
-	file, header, _ := r.FormFile("file")
+	file, header, err := r.FormFile("file")
+	if err != nil {
+		log.Println(err)
+	}
 	buff := new(bytes.Buffer)
 	w := multipart.NewWriter(buff)
 	createFormFile, err := w.CreateFormFile("smfile", header.Filename)
-	if err == nil {
-		readAll, _ := ioutil.ReadAll(file)
-		createFormFile.Write(readAll)
+	if err != nil {
+		log.Println(err)
 	}
+	readAll, _ := ioutil.ReadAll(file)
+	createFormFile.Write(readAll)
 	w.Close()
+
 	// 写入文件
 	req, _ := http.NewRequest(http.MethodPost, "https://sm.ms/api/v2/upload", buff)
-
 	token, _ := GetImgToken()
 	req.Header.Set("Authorization", token)
 	req.Header.Set("Content-Type", w.FormDataContentType())
 	client := &http.Client{}
+
 	// 转发文件
 	res, err := client.Do(req)
 	if err != nil {
-		return
+		log.Println(err)
 	}
-	fmt.Println(res)
+	buff.ReadFrom(res.Body)
+	var ret map[string]interface{}
+	json.Unmarshal(buff.Bytes(), &ret)
+
+	return ret
 }

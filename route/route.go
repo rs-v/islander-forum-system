@@ -23,6 +23,7 @@ func Init() *http.ServeMux {
 	forumServer.Handle("/forum/sage/sub", mid(sageSub))
 	forumServer.Handle("/forum/sage/list", mid(sageList))
 	forumServer.Handle("/img/token", mid(getImgToken))
+	forumServer.Handle("/img/upload", mid(postImgUpload))
 
 	fmt.Printf("listen to port %s", port)
 	http.ListenAndServe(port, forumServer)
