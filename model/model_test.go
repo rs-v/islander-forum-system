@@ -38,5 +38,5 @@ func TestGetReplyBuff(t *testing.T) {
 }
 
 func TestLastTime(t *testing.T) {
-	fmt.Println(GetForumIndexLastTime(1, 10))
+	fmt.Println(GetForumIndexLastTime(0, 10, []int{}))
 }

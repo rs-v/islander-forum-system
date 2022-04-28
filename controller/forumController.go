@@ -59,8 +59,9 @@ func GetForumPlate() ([]ForumPlate, error) {
 	return TransferForumPlateArrModel(res), nil
 }
 
-func GetForumIndexLastTime(page, size int) ([]ForumPost, int) {
-	modelRes, count := model.GetForumIndexLastTime(page, size)
+// 时间线
+func GetForumIndexLastTime(page, size int, exceptPlateArr []int) ([]ForumPost, int) {
+	modelRes, count := model.GetForumIndexLastTime(page, size, exceptPlateArr)
 	res := TransferForumPostListModel(modelRes)
 	getLastReply(res)
 	return res, count

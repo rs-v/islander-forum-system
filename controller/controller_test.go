@@ -25,7 +25,7 @@ func TestForum(t *testing.T) {
 }
 
 func TestGetLast(t *testing.T) {
-	fmt.Println(GetForumIndexLastTime(0, 10))
+	fmt.Println(GetForumIndexLastTime(0, 10, []int{}))
 }
 
 func TestDelIntArr(t *testing.T) {

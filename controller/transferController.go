@@ -76,7 +76,7 @@ func transferForumPostModel(data model.ForumPost) ForumPost {
 }
 
 func intArr2json(data []int) string {
-	if data == nil || len(data) == 0 {
+	if len(data) == 0 {
 		return "[]"
 	}
 	res, err := json.Marshal(data)

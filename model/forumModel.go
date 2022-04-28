@@ -38,11 +38,15 @@ func GetForumPlate() ([]ForumPlate, error) {
 	return res, err
 }
 
-func GetForumIndexLastTime(page, size int) ([]ForumPost, int) {
+func GetForumIndexLastTime(page, size int, notInArr []int) ([]ForumPost, int) {
 	first := page * size
 	var res []ForumPost
 	var count int64
-	db.Limit(size).Offset(first).Where("follow_id = 0 and status = 0").Order("last_reply_time desc").Find(&res).Limit(-1).Offset(-1).Count(&count)
+	if len(notInArr) > 0 {
+		db.Limit(size).Offset(first).Where("follow_id = 0 and status = 0 and plate_id not in (?)", notInArr).Order("last_reply_time desc").Find(&res).Limit(-1).Offset(-1).Count(&count)
+	} else {
+		db.Limit(size).Offset(first).Where("follow_id = 0 and status = 0").Order("last_reply_time desc").Find(&res).Limit(-1).Offset(-1).Count(&count)
+	}
 	return res, int(count)
 }
 
