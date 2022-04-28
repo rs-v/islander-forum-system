@@ -20,8 +20,8 @@ type Config struct {
 }
 
 func GetConfig() Config {
-	// file, err := ioutil.ReadFile("./conf/config.json")
-	file, err := ioutil.ReadFile("../conf/config.json")
+	file, err := ioutil.ReadFile("./conf/config.json")
+	// file, err := ioutil.ReadFile("../conf/config.json")
 	if err != nil {
 		log.Println(err)
 	}
