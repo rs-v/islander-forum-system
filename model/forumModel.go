@@ -256,12 +256,14 @@ func setLastReplyBuff(post ForumPost) {
 	rdb.Expire(ctx, key, buffTime)
 }
 
-func ChangePostPlate(post ForumPost, plateId int) {
-
+// 更改主贴板块
+func ChangePostPlate(postId int, plateId int) {
+	db.Model(&ForumPost{}).Where("id = ?", postId).Updates(ForumPost{PlateId: plateId})
 }
 
-func changeFollowPostPlate(followId int, plateId int) {
-
+// 更改从贴板块
+func ChangeFollowPostPlate(followId int, plateId int) {
+	db.Model(&ForumPost{}).Where("follow_id = ?", followId).Updates(ForumPost{PlateId: plateId})
 }
 
 func (ForumPost) TableName() string {

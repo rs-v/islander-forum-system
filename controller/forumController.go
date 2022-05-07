@@ -285,8 +285,9 @@ func pushSageUser(post *ForumPost, userArr []model.User, pushType int) {
 }
 
 // 移版
-func ChangePostPlate() {
-
+func ChangePostPlate(postId int, plateId int) {
+	model.ChangePostPlate(postId, plateId)
+	model.ChangeFollowPostPlate(postId, plateId)
 }
 
 func findIntArr(arr []int, id int) bool {

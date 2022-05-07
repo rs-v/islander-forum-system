@@ -44,3 +44,7 @@ func TestGetForumPostByUid(t *testing.T) {
 func TestGetImgToken(t *testing.T) {
 	fmt.Println(GetImgToken())
 }
+
+func TestChangePost(t *testing.T) {
+	ChangePostPlate(57, 1)
+}

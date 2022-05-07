@@ -40,3 +40,8 @@ func TestGetReplyBuff(t *testing.T) {
 func TestLastTime(t *testing.T) {
 	fmt.Println(GetForumIndexLastTime(0, 10, []int{}))
 }
+
+func TestChangePost(t *testing.T) {
+	ChangePostPlate(57, 1)
+	ChangeFollowPostPlate(57, 1)
+}
