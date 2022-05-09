@@ -45,3 +45,8 @@ func TestChangePost(t *testing.T) {
 	ChangePostPlate(57, 1)
 	ChangeFollowPostPlate(57, 1)
 }
+
+func TestRdbAddCount(t *testing.T) {
+	val := AddCount("123", 1, 10)
+	fmt.Println(val)
+}

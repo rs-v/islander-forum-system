@@ -1,7 +1,10 @@
 package route
 
 import (
+	"errors"
 	"net/http"
+
+	"github.com/forum_server/model"
 )
 
 func methodMiddleware(next http.Handler) http.Handler {
@@ -23,6 +26,22 @@ func methodMiddleware(next http.Handler) http.Handler {
 	})
 }
 
+// 计算访问次数
+func calcVisitTimeMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		ip := remoteIp(r)
+		// forumServer:ipVisitCount
+		key := "fS:ipVC:" + ip
+		// 十秒内访问次数
+		count := model.AddCount(key, 1, 10)
+		if count > 10 {
+			writeError(w, 403, errors.New("visited too much").Error())
+			return
+		}
+		next.ServeHTTP(w, r)
+	})
+}
+
 func totalMiddleware(next func(http.ResponseWriter, *http.Request)) http.Handler {
-	return methodMiddleware(http.HandlerFunc(next))
+	return calcVisitTimeMiddleware(methodMiddleware(http.HandlerFunc(next)))
 }

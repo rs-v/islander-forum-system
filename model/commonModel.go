@@ -50,7 +50,7 @@ func newDB() *gorm.DB {
 
 func addZsetBuff(key string, score int, data interface{}) {
 	value, _ := json.Marshal(data)
-	rdb := newRdb()
+	// rdb := newRdb()
 	err := rdb.ZAdd(ctx, key, &redis.Z{
 		Score:  float64(score),
 		Member: value,
@@ -61,7 +61,7 @@ func addZsetBuff(key string, score int, data interface{}) {
 }
 
 func getZsetArr(key string, first int64, end int64) []string {
-	rdb := newRdb()
+	// rdb := newRdb()
 	res, err := rdb.ZRevRange(ctx, key, first, end).Result()
 	if err != nil {
 		log.Println(err)
@@ -71,7 +71,7 @@ func getZsetArr(key string, first int64, end int64) []string {
 }
 
 func getZsetCount(key string) int {
-	rdb := newRdb()
+	// rdb := newRdb()
 	num, err := rdb.ZCard(ctx, key).Result()
 	if err != nil {
 		log.Println(err)
@@ -80,7 +80,7 @@ func getZsetCount(key string) int {
 }
 
 func delKey(key string) int {
-	rdb := newRdb()
+	// rdb := newRdb()
 	num, err := rdb.Del(ctx, key).Result()
 	if err != nil {
 		log.Println(err)
@@ -89,7 +89,7 @@ func delKey(key string) int {
 }
 
 func checkKey(key string) bool {
-	rdb := newRdb()
+	// rdb := newRdb()
 	num, err := rdb.Exists(ctx, key).Result()
 	if err != nil {
 		log.Println(err)
@@ -110,12 +110,12 @@ func tranPost(buffArr []string) []ForumPost {
 }
 
 func setCount(key string, count int) {
-	rdb := newRdb()
+	// rdb := newRdb()
 	rdb.Set(ctx, key, count, buffTime)
 }
 
 func getCount(key string) int {
-	rdb := newRdb()
+	// rdb := newRdb()
 	buff, err := rdb.Get(ctx, key).Result()
 	if err != nil {
 		log.Println(err)
@@ -125,6 +125,16 @@ func getCount(key string) int {
 		log.Println(err)
 	}
 	return count
+}
+
+// 记录key次数
+func AddCount(key string, count int, recordTime int) int {
+	val, err := rdb.IncrBy(ctx, key, int64(count)).Result()
+	if err != nil {
+		log.Println(err)
+	}
+	rdb.Expire(ctx, key, time.Second*time.Duration(recordTime))
+	return int(val)
 }
 
 // func get(query string, res ...interface{}) {
