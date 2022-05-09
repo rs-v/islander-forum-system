@@ -15,6 +15,7 @@ import (
 
 var ctx = context.Background()
 var db = newDB()
+var rdb = newRdb()
 
 // 时间从设置里拿
 var buffTime = time.Second * time.Duration(config.GetConfig().BuffTime)

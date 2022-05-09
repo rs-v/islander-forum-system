@@ -232,7 +232,7 @@ func initLastPostBuff(postArr []ForumPost) {
 
 // 设置首页缓存
 func setForumIndexBuff(post ForumPost) {
-	rdb := newRdb()
+	// rdb := newRdb()
 	score := post.LastReplyTime
 	// post.LastReplyTime = 0
 	key := "fS:pI:" + strconv.Itoa(post.PlateId)
@@ -242,7 +242,7 @@ func setForumIndexBuff(post ForumPost) {
 
 // 设置回复缓存
 func setForumReplyBuff(post ForumPost) {
-	rdb := newRdb()
+	// rdb := newRdb()
 	key := "fS:pR:" + strconv.Itoa(post.FollowId)
 	addZsetBuff(key, post.Time, post)
 	rdb.Expire(ctx, key, buffTime)
@@ -250,7 +250,7 @@ func setForumReplyBuff(post ForumPost) {
 
 // 设置最晚回复缓存
 func setLastReplyBuff(post ForumPost) {
-	rdb := newRdb()
+	// rdb := newRdb()
 	key := "fS:pLR:" + strconv.Itoa(post.FollowId)
 	addZsetBuff(key, post.Time, post)
 	rdb.Expire(ctx, key, buffTime)
