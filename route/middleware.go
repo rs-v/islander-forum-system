@@ -43,5 +43,5 @@ func calcVisitTimeMiddleware(next http.Handler) http.Handler {
 }
 
 func totalMiddleware(next func(http.ResponseWriter, *http.Request)) http.Handler {
-	return calcVisitTimeMiddleware(methodMiddleware(http.HandlerFunc(next)))
+	return methodMiddleware(calcVisitTimeMiddleware(http.HandlerFunc(next)))
 }
