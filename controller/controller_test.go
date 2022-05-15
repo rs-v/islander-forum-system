@@ -48,3 +48,7 @@ func TestGetImgToken(t *testing.T) {
 func TestChangePost(t *testing.T) {
 	ChangePostPlate(57, 1)
 }
+
+func TestStrOperate(t *testing.T) {
+	strOperate("[roll -10 0]")
+}

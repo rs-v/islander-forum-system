@@ -40,6 +40,7 @@ type ForumPlate struct {
 }
 
 func NewForumPost(value string, plateId int, userId int) *ForumPost {
+	// 传入字符串操作
 	return &ForumPost{
 		Value:     value,
 		PlateId:   plateId,
