@@ -1,12 +1,13 @@
 package controller
 
 import (
-	"fmt"
+	"errors"
 	"math/rand"
+	"time"
+
 	"regexp"
 	"strconv"
 	"strings"
-	"time"
 )
 
 // 操作
@@ -26,8 +27,10 @@ type OperateType struct {
 }
 
 // 字符串操作
+// TODO 根据前缀表达式构建语法分析树
 // [operate 123 123] 或 [operate?123&123]
 func strOperate(str string) string {
+	rand.Seed(time.Now().UnixNano())
 	// 通过[]查找操作
 	reg := regexp.MustCompile(`\[(.*?)\]`)
 	if reg == nil {
@@ -39,9 +42,10 @@ func strOperate(str string) string {
 		return str
 	}
 	// 通过?分割操作和参数
-	for _, value := range res {
-		fmt.Println(value)
-		strOperateCase(value[1])
+	for key, value := range res {
+		index := reg.FindAllIndex([]byte(str), -1)
+		repl, _ := strOperateCase(value[1])
+		str = str[:index[key][0]] + repl + str[index[key][1]:]
 	}
 	// 通过&分割参数
 
@@ -49,31 +53,46 @@ func strOperate(str string) string {
 }
 
 // 字符串操作选择
-func strOperateCase(str string) {
+func strOperateCase(str string) (string, error) {
 	split := strings.Split(str, " ")
 	operate := split[0]
 	param := split[1:]
-	fmt.Println(operate, param)
 	switch operate {
 	case "roll":
-		rollOperate(param)
+		num, err := rollOperate(param)
+		return "[" + str + "] = " + strconv.Itoa(num), err
+	case "+":
+		num, err := addOperate(param)
+		return "[" + str + "] = " + strconv.Itoa(num), err
 	}
+	return "[" + str + "]", nil
 }
 
-func rollOperate(param []string) {
+func rollOperate(param []string) (int, error) {
 	// 验参
 	if len(param) != 2 {
-		return
+		return 0, errors.New("illegal param")
 	}
 	start, err := strconv.Atoi(param[0])
 	if err != nil {
-		return
+		return 0, errors.New("illegal param")
 	}
 	end, err := strconv.Atoi(param[1])
 	if err != nil {
-		return
+		return 0, errors.New("illegal param")
 	}
-	rand.Seed(time.Now().Unix())
 	num := rand.Intn(end-start) + start
-	fmt.Println(num)
+	return num, nil
+}
+
+func addOperate(param []string) (int, error) {
+	sum := 0
+	for i := 0; i < len(param); i++ {
+		num, err := strconv.Atoi(param[i])
+		if err != nil {
+			return 0, errors.New("illegal param")
+		}
+		sum += num
+	}
+	return sum, nil
 }

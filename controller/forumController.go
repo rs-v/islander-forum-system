@@ -41,6 +41,7 @@ type ForumPlate struct {
 
 func NewForumPost(value string, plateId int, userId int) *ForumPost {
 	// 传入字符串操作
+	value = strOperate(value)
 	return &ForumPost{
 		Value:     value,
 		PlateId:   plateId,

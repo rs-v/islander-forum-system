@@ -50,5 +50,6 @@ func TestChangePost(t *testing.T) {
 }
 
 func TestStrOperate(t *testing.T) {
-	strOperate("[roll -10 0]")
+	fmt.Println(strOperate("你好，我现在在roll点 [roll -10 100] [roll -10 100] [roll -10 100] [roll -10 1]"))
+	fmt.Println(strOperate("你好，我现在在计算 [+ -10 100] [+ -10 100] [+ -10 100] [+ -10 100] [illegla]"))
 }
