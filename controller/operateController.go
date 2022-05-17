@@ -64,6 +64,9 @@ func strOperateCase(str string) (string, error) {
 	case "+":
 		num, err := addOperate(param)
 		return "[" + str + "] = " + strconv.Itoa(num), err
+	case "decide":
+		choice, err := decideOperate(param)
+		return "[" + str + "] = " + choice, err
 	}
 	return "[" + str + "]", nil
 }
@@ -81,7 +84,7 @@ func rollOperate(param []string) (int, error) {
 	if err != nil {
 		return 0, errors.New("illegal param")
 	}
-	num := rand.Intn(end-start) + start
+	num := rand.Intn(end-start+1) + start
 	return num, nil
 }
 
@@ -95,4 +98,8 @@ func addOperate(param []string) (int, error) {
 		sum += num
 	}
 	return sum, nil
+}
+
+func decideOperate(param []string) (string, error) {
+	return param[rand.Intn(len(param))], nil
 }
