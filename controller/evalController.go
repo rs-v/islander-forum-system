@@ -1,0 +1,25 @@
+package controller
+
+import "fmt"
+
+func eval(expression string) {
+	var wSwap []byte
+	var pSwap []string
+	for i := 1; i < len(expression)-1; i++ {
+		// 空格分割
+		if expression[i] != ' ' {
+			for {
+				wSwap = append(wSwap, expression[i])
+				i += 1
+				if expression[i] == ' ' || i >= len(expression)-1 {
+					pSwap = append(pSwap, string(wSwap))
+					wSwap = nil
+					break
+				}
+			}
+		}
+		// "号分割
+		// \号分割
+	}
+	fmt.Println(pSwap)
+}
