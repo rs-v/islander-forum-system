@@ -75,6 +75,7 @@ func parseExpression(str string, index int) (TreeNode, int) {
 			return node, index
 		} else if !rootStatus {
 			node, index = parseValue(str, index)
+			rootStatus = true
 		} else {
 			childNode, i := parseValue(str, index)
 			node.Param = append(node.Param, childNode)
