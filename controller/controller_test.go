@@ -53,5 +53,6 @@ func TestStrOperate(t *testing.T) {
 	// for i := 0; i < 10; i++ {
 	// 	fmt.Println(strOperate("你好，我现在在决定 [decide 吃饭 睡觉 coding]"))
 	// }
-	fmt.Println(parseValue(" [+  123   456]  ", 0))
+	node, _ := parseValue(" [+  abc   [+ 234 456] \"[123]\"]  ", 0)
+	printTree(node)
 }
