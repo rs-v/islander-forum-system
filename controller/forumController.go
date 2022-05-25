@@ -138,7 +138,7 @@ func GetForumPostByUid(uid int, page, size int) ([]ForumPost, int) {
 
 // 发串
 func PostForumPost(value string, title string, replyArr []int, plateId int, userId int, mediaUrl string, name string) error {
-	if value == "" || len(value) > 1024 || len(title) > 128 || len(mediaUrl) > 2048 {
+	if value == "" || len(value) > 8192 || len(title) > 128 || len(mediaUrl) > 2048 {
 		return errors.New("input too long or value is null")
 	}
 	post := NewForumPost(value, plateId, userId)
@@ -158,7 +158,7 @@ func PostForumPost(value string, title string, replyArr []int, plateId int, user
 
 // 回串
 func ReplyForumPost(value string, followId int, replyArr []int, userId int, mediaUrl string, name string) error {
-	if value == "" || len(value) > 1024 || len(mediaUrl) > 2048 {
+	if value == "" || len(value) > 8192 || len(mediaUrl) > 2048 {
 		return errors.New("input too long")
 	}
 	mainPost, err := GetForumPost(followId)
