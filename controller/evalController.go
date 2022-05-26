@@ -14,14 +14,55 @@ type TreeNode struct {
 	Param []*TreeNode
 }
 
+type ExprStr struct {
+	Str   string
+	Start int
+	End   int
+}
+
+func FindExpression(str string) []ExprStr {
+	length := len(str)
+	// 栈堆
+	stack := 0
+	// 记录开始
+	start := 0
+	end := 0
+	ExprArr := make([]ExprStr, 0)
+	for i := 0; i < length; i++ {
+		// 通过栈堆匹配
+		if str[i] == '[' {
+			start = i
+			stack += 1
+			for stack != 0 {
+				i++
+				// 找到头了
+				if i >= length {
+					return ExprArr
+				}
+				if str[i] == '[' {
+					stack += 1
+				}
+				if str[i] == ']' {
+					stack -= 1
+				}
+			}
+			end = i
+			ExprArr = append(ExprArr, ExprStr{Str: str[start : end+1], Start: start, End: end})
+		}
+	}
+	fmt.Println(ExprArr)
+
+	return ExprArr
+}
+
 func Eval(expression string) {
+
 }
 
 // 回查找的字符串，和游标index
 func parseValue(str string, index int) (*TreeNode, int) {
 	// 跳过空格
 	index = skipSpace(str, index)
-	fmt.Println(string(str[index]), index)
 	// 表达式
 	if str[index] == '[' {
 		return parseExpression(str, index)

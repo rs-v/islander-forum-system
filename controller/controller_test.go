@@ -53,6 +53,11 @@ func TestStrOperate(t *testing.T) {
 	// for i := 0; i < 10; i++ {
 	// 	fmt.Println(strOperate("你好，我现在在决定 [decide 吃饭 睡觉 coding]"))
 	// }
-	node, _ := parseValue(" [+  abc   [+ 234 456] \"[123]\"]  ", 0)
-	printTree(node)
+	// str := "123123 [+  abc   [+ 234 456] \"[123]\"] 2314123 [+  abc   [+ 234 456] \"[123]\"]"
+	str := "123123 [+  abc   [+ 234 456] \"[123]\"] 123 [+  abc   [+ 234 456] \"[123]"
+	exprArr := FindExpression(str)
+	for i := 0; i < len(exprArr); i++ {
+		node, _ := parseValue(exprArr[i].Str, 0)
+		printTree(node)
+	}
 }
