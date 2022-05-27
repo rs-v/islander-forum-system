@@ -19,10 +19,10 @@ jobs:
         go-version: 1.18
 
     - name: Build
-      run: go build -v ./...
+      run: go build 
     - name: Upload build
       uses: actions/upload-artifact@v3
       with:
          name: islander-forum-system
-         path: github.com/forum_server
+         path: forum_server
 
