@@ -20,4 +20,9 @@ jobs:
 
     - name: Build
       run: go build -v ./...
+    - name: Upload build
+        uses: actions/upload-artifact@v3
+        with:
+          name: islander-forum-system
+          path: *.exe
 
